@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# database key
+standstill-f7ca8-firebase-adminsdk-orkms-a89b5f0e65.json
