@@ -22,7 +22,8 @@ async function verifyUserAcc(jwt) {
     //decode
     const userData = jwtDecode(jwt);
     //get user data from db
-    const userDataFromDB = (await db.collection(databaseConstant.users).doc(userData.userName).get()).data();
+    const userDataFromDB = (await db.collection(databaseConstant.users).doc(userData.email).get()).data();
+    console.log(userDataFromDB)
 
     //account key
     const accountKey = nanoid();
@@ -32,7 +33,7 @@ async function verifyUserAcc(jwt) {
         throw new Error('wrong email or password')
     }
 
-    db.collection(databaseConstant.users).doc(userData.userName).update({
+    db.collection(databaseConstant.users).doc(userData.email).update({
         statusObj:{
             accountKey: accountKey,
             expire: Date.now() + 86400000
