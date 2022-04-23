@@ -7,7 +7,7 @@ router.use((req, res, next) =>{
         return next();
     }
 
-    return res.status(400).json("access not allowed")
+    return res.status(403).json("access not allowed")
 });
 
 module.exports = router;

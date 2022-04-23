@@ -11,7 +11,7 @@ const databaseConstant = require('../config/constant/database_constant')
 
 //partical func
 function checkUserData(userData, userDataFromDB) {
-    if (userData.userName === userDataFromDB && userData.password === userDataFromDB.password) {
+    if (userData.email === userDataFromDB.email && userData.password === userDataFromDB.password) {
         return true;
     }
     return false;
@@ -28,15 +28,16 @@ async function verifyUserAcc(jwt) {
     const accountKey = nanoid();
 
     //check user data
-    if (checkUserData(userData, userDataFromDB)) {
-        db.collection(databaseConstant.users).doc(userData.userName).update({
-            statusObj:{
-                accountKey: accountKey,
-                expire: Date.now() + 86400000
-            }
-        })
+    if (!checkUserData(userData, userDataFromDB)) {
+        throw new Error('wrong email or password')
     }
 
+    db.collection(databaseConstant.users).doc(userData.userName).update({
+        statusObj:{
+            accountKey: accountKey,
+            expire: Date.now() + 86400000
+        }
+    })
     return accountKey
 }
 
