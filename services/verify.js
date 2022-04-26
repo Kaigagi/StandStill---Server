@@ -23,7 +23,9 @@ async function verifyUserAcc(jwt) {
     const userData = jwtDecode(jwt);
     //get user data from db
     const userDataFromDB = (await db.collection(databaseConstant.users).doc(userData.email).get()).data();
-    console.log(userDataFromDB)
+    if (userDataFromDB === null || userDataFromDB === undefined) {
+        throw new Error('wrong email or password')
+    }
 
     //account key
     const accountKey = nanoid();
@@ -42,6 +44,19 @@ async function verifyUserAcc(jwt) {
     return accountKey
 }
 
+async function verifyAccountKey(accountKey) {
+    let userDataFromDB;
+    const userSnapShot =  await db.collection(databaseConstant.USERS).where('statusObj.accountKey','==',accountKey).get();
+    if (userSnapShot.empty) {
+        throw new Error("account key not valid");
+      } 
+    userSnapShot.forEach((doc)=>{
+        userDataFromDB = doc.data();
+    })
+    return userDataFromDB;
+}
+
 module.exports = {
-    verifyUserAcc
+    verifyUserAcc,
+    verifyAccountKey
 }
