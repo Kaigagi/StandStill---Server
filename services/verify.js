@@ -22,7 +22,7 @@ async function verifyUserAcc(jwt) {
     //decode
     const userData = jwtDecode(jwt);
     //get user data from db
-    const userDataFromDB = (await db.collection(databaseConstant.users).doc(userData.email).get()).data();
+    const userDataFromDB = (await db.collection(databaseConstant.USERS).doc(userData.email).get()).data();
     if (userDataFromDB === null || userDataFromDB === undefined) {
         throw new Error('wrong email or password')
     }
@@ -35,7 +35,7 @@ async function verifyUserAcc(jwt) {
         throw new Error('wrong email or password')
     }
 
-    db.collection(databaseConstant.users).doc(userData.email).update({
+    await db.collection(databaseConstant.USERS).doc(userData.email).update({
         statusObj:{
             accountKey: accountKey,
             expire: Date.now() + 86400000
@@ -47,12 +47,17 @@ async function verifyUserAcc(jwt) {
 async function verifyAccountKey(accountKey) {
     let userDataFromDB;
     const userSnapShot =  await db.collection(databaseConstant.USERS).where('statusObj.accountKey','==',accountKey).get();
+    console.log(userSnapShot.empty)
     if (userSnapShot.empty) {
         throw new Error("account key not valid");
-      } 
+    } 
     userSnapShot.forEach((doc)=>{
         userDataFromDB = doc.data();
+        
     })
+    if (userDataFromDB.statusObj.expire < Date.now()) {
+        throw new Error("account key not valid");
+    }
     return userDataFromDB;
 }
 
