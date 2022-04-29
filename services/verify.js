@@ -10,6 +10,13 @@ const {nanoid} = require('nanoid');
 const databaseConstant = require('../config/constant/database_constant')
 
 //partical func
+/**
+ * 
+ * @param {{email: string, password: string}} userData 
+ * @param {{email: string, password: string}} userDataFromDB 
+ * @returns {boolean}
+ * @description compare received data and data from db
+ */
 function checkUserData(userData, userDataFromDB) {
     if (userData.email === userDataFromDB.email && userData.password === userDataFromDB.password) {
         return true;
@@ -18,6 +25,12 @@ function checkUserData(userData, userDataFromDB) {
 }
 
 //main func
+/**
+ * 
+ * @param {string} jwt 
+ * @returns {string}
+ * @description verify login data from user by decoding a jwt string
+ */
 async function verifyUserAcc(jwt) {
     //decode
     const userData = jwtDecode(jwt);
@@ -38,16 +51,20 @@ async function verifyUserAcc(jwt) {
     await db.collection(databaseConstant.USERS).doc(userData.email).update({
         statusObj:{
             accountKey: accountKey,
-            expire: Date.now() + 86400000
+            expire: Date.now() + 43200000
         }
     })
     return accountKey
 }
 
+/**
+ * 
+ * @param {string} accountKey 
+ * @returns {userObj}
+ */
 async function verifyAccountKey(accountKey) {
     let userDataFromDB;
     const userSnapShot =  await db.collection(databaseConstant.USERS).where('statusObj.accountKey','==',accountKey).get();
-    console.log(userSnapShot.empty)
     if (userSnapShot.empty) {
         throw new Error("account key not valid");
     } 

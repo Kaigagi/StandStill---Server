@@ -14,6 +14,7 @@ admin.initializeApp({
 
 //import route
 const verify = require('./api/verify')
+const room = require('./api/room')
 
 app.use(express.json())
 app.use(express.urlencoded())
@@ -39,6 +40,7 @@ app.use(expressWinston.logger({
 
 //route
 app.use(`/api/${process.env.VERSION}`,verify);
+app.use(`/api/${process.env.VERSION}`,room);
 
 app.listen(process.env.PORT,()=>{
     console.log(`listening on port ${process.env.PORT}`)
